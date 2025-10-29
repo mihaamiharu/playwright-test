@@ -1,0 +1,44 @@
+name: Update Dashboard Data
+
+on:
+  schedule:
+    - cron: '*/15 * * * *'
+  workflow_run:
+    workflows: ["Daily Regression Suite", "On-Demand Regression"]
+    types:
+      - completed
+  workflow_dispatch:
+
+jobs:
+  build-data:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run data-builder script
+        env:
+          GITHUB_TOKEN: ${{ secrets.DASHBOARD_PAT }}
+          REPO_OWNER: ${{ github.repository_owner }}
+          REPO_NAME: ${{ github.event.repository.name }}
+        run: node scripts/update-dashboard.js
+
+      - name: Commit new status.json
+        uses: stefanzweifel/git-auto-commit-action@v5clea
+        with:
+          commit_message: "chore: update dashboard status.json"
+          file_pattern: status.json
+          commit_user_name: "Dashboard Bot"
+          commit_user_email: "github-actions@github.com"
+          commit_author: "Dashboard Bot <github-actions@github.com>"
