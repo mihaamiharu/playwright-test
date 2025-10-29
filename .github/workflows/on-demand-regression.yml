@@ -1,0 +1,39 @@
+name: On-Demand Regression
+
+on:
+  workflow_dispatch:
+    inputs:
+      tags:
+        description: 'Test tags to run (e.g., @smoke, @ticket-123, or @login)'
+        default: '@regression'
+        required: true
+        type: string
+
+jobs:
+  test:
+    name: 'Run On-Demand Tests'
+    timeout-minutes: 60
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright Browsers
+        run: npx playwright install chromium --with-deps
+
+      - name: Run Playwright tests
+        run: npx playwright test --grep "${{ github.event.inputs.tags }}"
+
+      - name: Upload test report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report-on-demand
+          path: playwright-report/
+          retention-days: 7
