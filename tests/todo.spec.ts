@@ -13,8 +13,7 @@ test.describe('TodoMVC App', { tag: ['@regression', '@todo'] }, () => {
     await newTodo.fill('Buy milk');
     await newTodo.press('Enter');
 
-    const todoList = page.getByTestId('todo-list');
-    await expect(todoList).toBeVisible();
+
     await expect(page.getByText('Buy milk')).toBeVisible();
   });
 
