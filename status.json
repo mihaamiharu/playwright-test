@@ -1,0 +1,15 @@
+{
+  "daily": {
+    "status": "failure",
+    "runDate": "10/29/2025, 11:49:36 AM",
+    "triggeredBy": "mihaamiharu",
+    "runUrl": "https://github.com/mihaamiharu/playwright-test/actions/runs/18906873363"
+  },
+  "ondemand": {
+    "status": "success",
+    "runDate": "10/29/2025, 1:33:44 PM",
+    "triggeredBy": "mihaamiharu",
+    "runUrl": "https://github.com/mihaamiharu/playwright-test/actions/runs/18909691201"
+  },
+  "last_updated": "2025-10-29T13:54:05.948Z"
+}
