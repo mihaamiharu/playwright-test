@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QA Dashboard</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; margin: 0; padding: 20px; background-color: #f6f8fa; }
+        h1 { text-align: center; }
+        .dashboard { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; max-width: 900px; margin: auto; }
+        .workflow { background: #fff; border: 1px solid #d0d7de; border-radius: 6px; padding: 20px; }
+        .workflow h2 { margin-top: 0; }
+        .status { font-size: 24px; font-weight: bold; padding: 10px; border-radius: 5px; text-align: center; }
+        .status.success { background: #dafbe1; color: #0e8a38; }
+        .status.failure { background: #fde6e8; color: #c40a0a; }
+        .status.running { background: #e6f0fa; color: #1c68d1; }
+        .status.loading { background: #eee; color: #333; }
+        .meta { font-size: 14px; color: #57606a; margin-top: 15px; }
+        .report-link { display: none; margin-top: 15px; }
+    </style>
+</head>
+<body>
+
+    <h1>QA Test Dashboard</h1>
+
+    <div class="dashboard">
+        <div class="workflow">
+            <h2>Daily Regression</h2>
+            <div id="daily-status" class="status loading">Loading...</div>
+            <div id="daily-meta" class="meta"></div>
+            <a id="daily-report" class="report-link" href="#" target="_blank">View Run Log</a>
+        </div>
+        
+        <div class="workflow">
+            <h2>On-Demand Regression</h2>
+            <div id="ondemand-status" class="status loading">Loading...</div>
+            <div id="ondemand-meta" class="meta"></div>
+            <a id="ondemand-report" class="report-link" href="#" target="_blank">View Run Log</a>
+        </div>
+    </div>
+
+    <script>
+        function updateWorkflowCard(data, statusEl, metaEl, reportEl) {
+            if (!data || !data.status) {
+                statusEl.textContent = "No Runs Found";
+                statusEl.className = "status";
+                return;
+            }
+
+            if (data.status === "running") {
+                statusEl.textContent = "Running...";
+                statusEl.className = "status running";
+            } else if (data.status === "success") {
+                statusEl.textContent = "Success";
+                statusEl.className = "status success";
+            } else {
+                statusEl.textContent = "Failure";
+                statusEl.className = "status failure";
+            }
+
+            metaEl.innerHTML = `<strong>Triggered by:</strong> ${data.triggeredBy}<br><strong>On:</strong> ${data.runDate}`;
+            reportEl.href = data.runUrl;
+            reportEl.style.display = "block";
+        }
+
+        async function loadDashboard() {
+            try {
+                const response = await fetch(`status.json?t=${new Date().getTime()}`);
+                if (!response.ok) throw new Error('Failed to load status.json');
+                
+                const data = await response.json();
+
+                updateWorkflowCard(data.daily,
+                    document.getElementById("daily-status"),
+                    document.getElementById("daily-meta"),
+                    document.getElementById("daily-report")
+                );
+
+                updateWorkflowCard(data.ondemand,
+                    document.getElementById("ondemand-status"),
+                    document.getElementById("ondemand-meta"),
+                    document.getElementById("ondemand-report")
+                );
+
+            } catch (error) {
+                console.error("Failed to load dashboard data:", error);
+                document.getElementById("daily-status").textContent = "Error loading";
+                document.getElementById("ondemand-status").textContent = "Error loading";
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", loadDashboard);
+    </script>
+</body>
+</html>
