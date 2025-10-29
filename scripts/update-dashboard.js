@@ -1,5 +1,5 @@
-const { Octokit } = require("@octokit/rest");
-const fs = require("fs");
+import { Octokit } from "@octokit/rest";
+import fs from "fs";
 
 const REPO_OWNER = process.env.REPO_OWNER;
 const REPO_NAME = process.env.REPO_NAME;
