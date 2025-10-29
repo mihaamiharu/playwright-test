@@ -52,6 +52,6 @@ test.describe('TodoMVC App', { tag: ['@regression', '@todo'] }, () => {
 
     await expect(todoItem).toBeHidden();
     
-    await expect(page.getByTestId('todo-list')).toBeEmpty();
+    await expect(page.getByTestId('todo-item')).toHaveCount(0);
   });
 });
