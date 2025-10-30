@@ -20,6 +20,9 @@ jobs:
     timeout-minutes: 60
     runs-on: ubuntu-latest
     container: ghcr.io/${{ github.repository }}:latest
+    
+    # Add this line:
+    working-directory: /app
 
     steps:
       - name: Run Playwright tests
