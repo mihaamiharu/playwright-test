@@ -3,6 +3,12 @@ name: Daily Regression Suite
 on:
   schedule:
     - cron: '0 3 * * *'
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
 
 permissions:
   contents: read
@@ -22,6 +28,12 @@ jobs:
         shard: [1, 2, 3, 4]
         
     steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+
+      - name: Link pre-installed dependencies
+        run: ln -s /app/node_modules ./node_modules
+        
       - name: Run Playwright tests
         run: npx playwright test --grep @regression --shard=${{ matrix.shard }}/${{ matrix.maxSet }}
 
@@ -30,7 +42,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: playwright-results-shard-${{ matrix.shard }}
-          path: playwright-test-results/
+          path: test-results/
           retention-days: 1
 
   merge-results:
@@ -41,6 +53,12 @@ jobs:
     container: ghcr.io/${{ github.repository }}:latest
 
     steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+        
+      - name: Link pre-installed dependencies
+        run: ln -s /app/node_modules ./node_modules
+
       - name: Download all shard results
         uses: actions/download-artifact@v4
         with:
