@@ -16,7 +16,10 @@ jobs:
     timeout-minutes: 60
     runs-on: ubuntu-latest
     container: ghcr.io/${{ github.repository }}:latest
-    working-directory: /app
+
+    defaults:
+      run:
+        working-directory: /app
     
     strategy:
       fail-fast: false
@@ -41,7 +44,10 @@ jobs:
     if: always()
     runs-on: ubuntu-latest
     container: ghcr.io/${{ github.repository }}:latest
-    working-directory: /app
+
+    defaults:
+      run:
+        working-directory: /app
 
     steps:
       - name: Download all shard results
