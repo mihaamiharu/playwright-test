@@ -6,10 +6,10 @@
     "runUrl": "https://github.com/mihaamiharu/playwright-test/actions/runs/18929117161"
   },
   "ondemand": {
-    "status": "success",
-    "runDate": "10/29/2025, 1:33:44 PM",
+    "status": "failure",
+    "runDate": "10/30/2025, 12:29:57 PM",
     "triggeredBy": "mihaamiharu",
-    "runUrl": "https://github.com/mihaamiharu/playwright-test/actions/runs/18909691201"
+    "runUrl": "https://github.com/mihaamiharu/playwright-test/actions/runs/18940662385"
   },
-  "last_updated": "2025-10-30T11:52:16.529Z"
+  "last_updated": "2025-10-30T12:30:54.057Z"
 }
