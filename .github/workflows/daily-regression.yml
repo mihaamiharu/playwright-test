@@ -4,66 +4,74 @@ on:
   schedule:
     - cron: '0 3 * * *'
 
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
 jobs:
   test:
     name: 'Test Shard ${{ matrix.shard }} / 4'
     timeout-minutes: 60
     runs-on: ubuntu-latest
+    container: ghcr.io/${{ github.repository }}:latest
     
     strategy:
       fail-fast: false
       matrix:
         shard: [1, 2, 3, 4]
-
+        
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 18
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Install Playwright Browsers
-        run: npx playwright install chromium --with-deps
-
       - name: Run Playwright tests
         run: npx playwright test --grep @regression --shard=${{ matrix.shard }}/${{ matrix.maxSet }}
 
-      - name: Upload shard report
+      - name: Upload shard test results
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: playwright-report-shard-${{ matrix.shard }}
-          path: playwright-report/
-          retention-days: 7
+          name: playwright-results-shard-${{ matrix.shard }}
+          path: playwright-test-results/
+          retention-days: 1
 
-  merge-reports:
-    name: 'Merge & Publish Report'
+  merge-results:
+    name: 'Merge Test Results'
     needs: test
     if: always()
     runs-on: ubuntu-latest
+    container: ghcr.io/${{ github.repository }}:latest
 
     steps:
-      - uses: actions/checkout@v4
-      - name: Download all shard reports
+      - name: Download all shard results
         uses: actions/download-artifact@v4
         with:
-          path: all-shard-reports/
-          pattern: playwright-report-shard-*
+          path: all-test-results/
+          pattern: playwright-results-shard-*
           merge-multiple: true
 
-      - name: Install Playwright
-        run: npm ci && npx playwright install
-
       - name: Merge reports
-        run: |
-          mkdir -p playwright-report
-          cp -r all-shard-reports/* playwright-report/
-      
+        run: npx playwright merge-reports --reporter html all-test-results/
+          
       - name: Upload final HTML report
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-pages-artifact@v3
         with:
-          name: playwright-report-final
+          name: daily-report
           path: playwright-report/
           retention-days: 7
+
+  deploy-report:
+    name: 'Deploy Daily Report'
+    needs: merge-results
+    if: always()
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}/daily/
+      
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+        with:
+          artifact_name: daily-report
+          token: ${{ secrets.GITHUB_TOKEN }}
+          to_paths: /daily/
