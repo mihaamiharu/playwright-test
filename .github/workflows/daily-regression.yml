@@ -25,6 +25,9 @@ jobs:
     steps:
       - name: Check out code
         uses: actions/checkout@v4
+
+      - name: Link pre-installed dependencies
+        run: ln -s /app/node_modules ./node_modules
         
       - name: Run Playwright tests
         run: npx playwright test --grep @regression --shard=${{ matrix.shard }}/${{ matrix.maxSet }}
@@ -48,6 +51,9 @@ jobs:
       - name: Check out code
         uses: actions/checkout@v4
         
+      - name: Link pre-installed dependencies
+        run: ln -s /app/node_modules ./node_modules
+
       - name: Download all shard results
         uses: actions/download-artifact@v4
         with:

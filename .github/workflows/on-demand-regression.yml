@@ -24,6 +24,9 @@ jobs:
     steps:
       - name: Check out code
         uses: actions/checkout@v4
+
+      - name: Link pre-installed dependencies
+        run: ln -s /app/node_modules ./node_modules
         
       - name: Run Playwright tests
         run: npx playwright test --grep "${{ github.event.inputs.tags }}"
