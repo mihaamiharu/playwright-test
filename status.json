@@ -7,9 +7,9 @@
   },
   "ondemand": {
     "status": "failure",
-    "runDate": "10/30/2025, 1:23:59 PM",
+    "runDate": "10/30/2025, 1:42:28 PM",
     "triggeredBy": "mihaamiharu",
-    "runUrl": "https://github.com/mihaamiharu/playwright-test/actions/runs/18942120412"
+    "runUrl": "https://github.com/mihaamiharu/playwright-test/actions/runs/18942680279"
   },
-  "last_updated": "2025-10-30T13:33:54.272Z"
+  "last_updated": "2025-10-30T13:43:27.804Z"
 }
